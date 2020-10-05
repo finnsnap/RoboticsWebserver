@@ -1,44 +1,52 @@
-var http = require('http').createServer(handler); //require http server, and create server with function handler()
-var fs = require('fs'); //require filesystem module
+var http = require('http').createServer(handler) //require http server, and create server with function handler()
+var fs = require('fs') //require filesystem module
 var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
 
-http.listen(8080); //listen to port 8080
+http.listen(8080) //listen to port 8080
 
 function handler (req, res) { //create server
   fs.readFile(__dirname + '/index.html', function(err, data) { //read file index.html in public folder
     if (err) {
-      res.writeHead(404, {'Content-Type': 'text/html'}); //display 404 on error
+      res.writeHead(404, {'Content-Type': 'text/html'}) //display 404 on error
       return res.end("404 Not Found");
     }
-    res.writeHead(200, {'Content-Type': 'text/html'}); //write HTML
+    res.writeHead(200, {'Content-Type': 'text/html'}) //write HTML
     res.write(data); //write data from index.html
     return res.end();
   });
 }
 
-io.sockets.on('connection', function (socket) {// WebSocket Connection
-  var lightvalue = 0; //static variable for current status
-  socket.on('light', function(data) { //get light switch status from client
-    lightvalue = data;
-    if (lightvalue) {
-      console.log(lightvalue); //turn LED on or off, for now we will just show it in console.log
-    }
+io.on('connection', function(socket) {  
+  console.log('A user connected');
+
+  //Send a message after a timeout of 4seconds
+  setTimeout(function() {
+     socket.send('Sent a message 4seconds after connection!');
+  }, 4000);
+  
+  socket.on('disconnect', function () {
+     console.log('A user disconnected');
   });
 });
 
+
+
+
+
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://test.mosquitto.org')
- 
-client.on('connect', function () {
-  client.subscribe('presence', function (err) {
+var esp32mqtt  = mqtt.connect('mqtt://localhost')
+
+esp32mqtt.on('connect', function () {
+  esp32mqtt.subscribe('mqtt', function (err) {
     if (!err) {
-      client.publish('presence', 'Hello mqtt')
+      esp32mqtt.publish('mqtt', 'Hello mqtt')
     }
   })
 })
  
-client.on('message', function (topic, message) {
+esp32mqtt.on('message', function (topic, message) {
   // message is Buffer
-  console.log(message.toString())
-  client.end()
+  console.log("Topic: " + topic + " \nMessage: " + message.toString())
+  io.sockets.send(message.toString());
 })
+
