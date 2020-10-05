@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html land="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web interface for MQTT over Websockets">
+    <meta name="author" content="Philip Wig">
+
+    <title>Robotic Dashboard</title>
+    
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" href="../bootstrap-4.5.2-dist/css/bootstrap.css">-->
+    <!-- <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"> -->
+    <!-- jQuery -->
+    <!-- <script src="../node_modules/jquery/dist/jquery.min.js" type="text/html"></script> -->
+    <!-- Chart.js -->
+    <!-- <script src="../node_modules/chart.js/dist/Chart.js" type="text/html"></script> -->
+    <!-- MQTT Websocket -->
+    <!-- <script type="text/html" src="../paho.javascript-1.0.3/paho-mqtt.js"></script> -->
+  </head>
+
+  <body>
+
+    <h1>Control LED light</h1>
+    <p><input type="checkbox" id="light"></p>
+
+    <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
+    <script>
+      var socket = io(); //load socket.io-client and connect to the host that serves the page
+      window.addEventListener("load", function(){ //when page loads
+        var lightbox = document.getElementById("light");
+        lightbox.addEventListener("change", function() { //add event listener for when checkbox changes
+          socket.emit("light", Number(this.checked)); //send button status to server (as 1 or 0)
+        });
+      });
+      socket.on('light', function (data) { //get button status from client
+        document.getElementById("light").checked = data; //change checkbox according to push button on Raspberry Pi
+        socket.emit("light", data); //send push button status to back to server
+      });
+    </script>
+
+  </body>
+</html> 
