@@ -1,7 +1,6 @@
 var http = require('http').createServer(handler) //require http server, and create server with function handler()
 var fs = require('fs') //require filesystem module
 var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
-
 http.listen(8080) //listen to port 8080
 
 function handler (req, res) { //create server
@@ -19,10 +18,10 @@ function handler (req, res) { //create server
 io.on('connection', function(socket) {  
   console.log('A user connected');
 
-  //Send a message after a timeout of 4seconds
-  setTimeout(function() {
-     socket.send('Sent a message 4seconds after connection!');
-  }, 4000);
+  // //Send a message after a timeout of 4seconds
+  // setTimeout(function() {
+  //    socket.send('Sent a message 4seconds after connection!');
+  // }, 4000);
   
   socket.on('disconnect', function () {
      console.log('A user disconnected');
@@ -30,23 +29,19 @@ io.on('connection', function(socket) {
 });
 
 
-
-
-
 var mqtt = require('mqtt')
 var esp32mqtt  = mqtt.connect('mqtt://localhost')
 
 esp32mqtt.on('connect', function () {
-  esp32mqtt.subscribe('mqtt', function (err) {
-    if (!err) {
-      esp32mqtt.publish('mqtt', 'Hello mqtt')
-    }
-  })
+  esp32mqtt.subscribe('esp32/output') 
 })
- 
+
 esp32mqtt.on('message', function (topic, message) {
   // message is Buffer
-  console.log("Topic: " + topic + " \nMessage: " + message.toString())
+  var data = JSON.parse(message);
+  // Sample message: '{"name":"Robot1", "ID":"33424", "batteryLevel":"100"}'
+  
+  console.log("Topic: " + topic + " \nMessage: " + message.toString() + "\nName: " + data.name);
   io.sockets.send(message.toString());
 })
 
