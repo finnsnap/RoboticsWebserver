@@ -34,9 +34,9 @@ esp32mqtt.on('connect', function () {
 esp32mqtt.on('message', function (topic, message) {
   // message is Buffer
   var data = JSON.parse(message);
-  // Sample message: '{"name":"Robot1", "ID":"33424", "batteryLevel":"100"}'
+  // Sample message: {"robotName":"ESP32","batteryLevel":"33","contollerStatus":"Connected","timeSinceReset":76038}
   
-  console.log("Topic: " + topic + " \nMessage: " + message.toString() + "\nName: " + data.name);
+  console.log("\nTopic: " + topic + " \nMessage: " + message.toString() + "\nrobotName: " + data.robotName + "\nbatteryLevel: " + data.batteryLevel + "\ncontollerStatus: " + data.contollerStatus + "\ntimeSinceReset: " + data.timeSinceReset);
   io.sockets.send(message.toString());
 })
 
