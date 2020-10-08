@@ -13,11 +13,32 @@
   </head>
 
   <body>
-
     <h1>Control LED light</h1>
     <p><input type="checkbox" id="light"></p>
     <p><id='message'>TEst TESts</id></p>
     <p id="speed"><h2>First Text</h2></p>
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <p><h2>Robot Name</h2></p>
+          <p id="robotName"><h3> </h3></p>
+        </div>
+        <div class="col-sm">
+          <p><h2>Battery Level</h2></p>
+          <p id="batteryLevel"><h3> </h3></p>
+        </div>
+        <div class="col-sm">
+          <p><h2>Contoller Status</h2></p>
+          <p id="contollerStatus"><h3> </h3></p>
+        </div>        
+        <div class="col-sm">
+          <p><h2>Time since last reset (ms)</h2></p>
+          <p id="timeSinceReset"><h3> </h3></p>
+        </div>
+      </div>
+    </div>
+    
     <div class="container">
       <div class="row">
         <div class="col-sm">
@@ -32,21 +53,30 @@
       </div>
     </div>
 
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>  
     <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
+    
     <script>
-      var socket = io(); //load socket.io-client and connect to the host that serves the page
-      
+      const socket = io(); //load socket.io-client and connect to the host that serves the page
+      console.log("Started sockets");
+
       socket.on('message',  function(data){    
-        console.log("Received number " + data);
-        document.getElementById("speed").textContent=data;
+        var message = JSON.parse(data);
+        // Sample message: {"robotName":"ESP32","batteryLevel":"33","contollerStatus":"Connected","timeSinceReset":76038}
+        console.log("Recieved message: " + data.toString() + "\nrobotName: " + message.robotName + "\nbatteryLevel: " + message.batteryLevel + "\ncontollerStatus: " + message.contollerStatus + "\ntimeSinceReset: " + message.timeSinceReset);
+
+        document.getElementById("robotName").innerHTML = message.robotName; 
+        document.getElementById("batteryLevel").innerHTML = message.batteryLevel; 
+        document.getElementById("contollerStatus").innerHTML = message.contollerStatus; 
+        document.getElementById("timeSinceReset").innerHTML = message.timeSinceReset; 
       })
 
-      socket.on('news',  function(data){    
-        console.log("Received stuff " + data);
+      socket.on('test',  function(data){    
+        console.log("Received stuff: " + data);
       })
     </script>
     
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>  
+
   </body>
 </html> 
