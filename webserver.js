@@ -1,27 +1,43 @@
-var http = require('http').createServer(handler) //require http server, and create server with function handler()
-var fs = require('fs') //require filesystem module
-var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
-http.listen(8080) //listen to port 8080
+var http = require('http');
+var express = require("express");
+var app = express();
 
-function handler (req, res) { //create server
-  fs.readFile(__dirname + '/index.html', function(err, data) { //read file index.html in public folder
-    if (err) {
-      res.writeHead(404, {'Content-Type': 'text/html'}) //display 404 on error
-      return res.end("404 Not Found");
-    }
-    res.writeHead(200, {'Content-Type': 'text/html'}) //write HTML
-    res.write(data); //write data from index.html
-    return res.end();
-  });
-}
+var server = http.createServer(app);
+// Pass a http.Server instance to the listen method
+var io = require('socket.io').listen(server);
 
+// The server should start listening
+server.listen(8080);
+
+// Register the index route of your app that returns the HTML file
+app.get('/', function (req, res) {
+  console.log("Homepage");
+  res.sendFile(__dirname + '/public/index.html');
+});
+
+// Expose the node_modules folder as static resources (to access socket.io.js in the browser)
+//app.use('/static', express.static('node_modules'));
+app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
+app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
+app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect CSS bootstrap
+
+// Handle connection
 io.on('connection', function(socket) {  
   console.log('A user connected');
- 
+  
+  socket.emit('news', "Test send stuff");
+
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+
+
   socket.on('disconnect', function () {
      console.log('A user disconnected');
   });
 });
+
+
 
 
 var mqtt = require('mqtt')
