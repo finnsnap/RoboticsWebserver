@@ -8,75 +8,95 @@
 
     <title>Robotic Dashboard</title>
     
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!-- Bootstrap core CSS: cyborg, darkly, superhero-->
+    <link rel="stylesheet" href="/css/superhero/bootstrap.min.css">
   </head>
 
   <body>
-    <h1>Control LED light</h1>
-    <p><input type="checkbox" id="light"></p>
-    <p><id='message'>TEst TESts</id></p>
-    <p id="speed"><h2>First Text</h2></p>
-    
-    <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <p><h2>Robot Name</h2></p>
-          <p id="robotName"><h3> </h3></p>
-        </div>
-        <div class="col-sm">
-          <p><h2>Battery Level</h2></p>
-          <p id="batteryLevel"><h3> </h3></p>
-        </div>
-        <div class="col-sm">
-          <p><h2>Contoller Status</h2></p>
-          <p id="contollerStatus"><h3> </h3></p>
-        </div>        
-        <div class="col-sm">
-          <p><h2>Time since last reset (ms)</h2></p>
-          <p id="timeSinceReset"><h3> </h3></p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Robotic Football Command Center</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="/robotinfo.html">Robot Information</a>
+          <a class="nav-item nav-link" href="../reprogramming/">Reprogramming</a>
         </div>
       </div>
-    </div>
-    
-    <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <button type="button" class="btn btn-primary">Primary</button>
-        </div>
-        <div class="col-sm">
-          <button type="button" class="btn btn-secondary">Secondary</button>
-        </div>
-        <div class="col-sm">
-          <button type="button" class="btn btn-danger">Danger</button>
-        </div>
-      </div>
+    </nav>
+    <h1 class="text-center p-2">Overview of Robots</h1>
+    <div class="container p-2">    
+        <table class="table table-bordered" id="summtable">
+          <thead>
+            <tr>
+              <th scope="col">Robot Number</th>
+              <th scope="col">Battery Level</th>
+              <th scope="col">Contoller Conencted</th>
+              <th scope="col">Tackle Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+          </tbody>
+        </table>
     </div>
 
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>  
     <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
-    
+
     <script>
       const socket = io(); //load socket.io-client and connect to the host that serves the page
       console.log("Started sockets");
+      var firstPacket = true;
 
-      socket.on('message',  function(data){    
-        var message = JSON.parse(data);
-        // Sample message: {"robotName":"ESP32","batteryLevel":"33","contollerStatus":"Connected","timeSinceReset":76038}
-        console.log("Recieved message: " + data.toString() + "\nrobotName: " + message.robotName + "\nbatteryLevel: " + message.batteryLevel + "\ncontollerStatus: " + message.contollerStatus + "\ntimeSinceReset: " + message.timeSinceReset);
-
-        document.getElementById("robotName").innerHTML = message.robotName; 
-        document.getElementById("batteryLevel").innerHTML = message.batteryLevel; 
-        document.getElementById("contollerStatus").innerHTML = message.contollerStatus; 
-        document.getElementById("timeSinceReset").innerHTML = message.timeSinceReset; 
-      })
-
-      socket.on('test',  function(data){    
-        console.log("Received stuff: " + data);
+      socket.on('website',  function(message){    
+        if (firstPacket){
+          console.log("First packet: " + JSON.stringify(message));
+          for (var key of Object.keys(message)) {
+            if (!message[key].noData) {
+              var row = $('<tr/' + 'class=table-success' + ' id=' + key + '>');
+              row.append($('<td/>').html(key.replace('r', '')));
+              row.append($('<td/>').html(message[key].batteryLevel));
+              row.append($('<td/>').html(message[key].contollerStatus));
+              row.append($('<td/>').html(message[key].tackleStatus));
+            }
+            else {
+              var row = $('<tr/' + 'class=table-active' + ' id=' + key + '>');
+              row.append($('<td/>').html(key.replace('r', '')));
+              row.append($('<td/>').html(""));
+              row.append($('<td/>').html(""));
+              row.append($('<td/>').html(""));
+            }
+            $('#summtable').append(row); 
+          } 
+          firstPacket = false;
+        }
+        else {
+          // Sample message: "{"1":{"batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","newData":true,"noData":false},"2":{"newData":false,"noData":true}, ..."
+          console.log("New packet: " + JSON.stringify(message));
+          for (var key of Object.keys(message)) {
+            if (message[key].noData) {
+              var row = $('<tr/' + 'class=table-active' + ' id=' + key + '>');
+              row.append($('<td/>').html(key.replace('r', '')));
+              row.append($('<td/>').html(""));
+              row.append($('<td/>').html(""));
+              row.append($('<td/>').html(""));
+              $('#' + key).replaceWith(row);
+            }
+            else if (message[key].newData) {
+              var row = $('<tr/' + 'class=table-success' + ' id=' + key + '>');
+              row.append($('<td/>').html(key.replace('r', '')));
+              row.append($('<td/>').html(message[key].batteryLevel));
+              row.append($('<td/' + 'class=' + message[key].tackleStatus +'>').html(message[key].contollerStatus));
+              row.append($('<td/>').html(message[key].tackleStatus));
+              $('#' + key).replaceWith(row);
+            }
+          } 
+        }      
       })
     </script>
-    
-
   </body>
 </html> 

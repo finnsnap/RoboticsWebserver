@@ -5,6 +5,7 @@
   "main": "webserver.js",
   "dependencies": {
     "bootstrap": "^4.5.2",
+    "bootswatch": "^4.5.2",
     "express": "^4.17.1",
     "jquery": "^3.5.1",
     "mqtt": "^4.2.1",
