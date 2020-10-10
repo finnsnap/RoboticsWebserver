@@ -21,8 +21,8 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
-          <a class="nav-item nav-link" href="/robotinfo.html">Robot Information</a>
-          <a class="nav-item nav-link" href="../reprogramming/">Reprogramming</a>
+          <a class="nav-item nav-link" href="/robotinfo">Robot Information</a>
+          <a class="nav-item nav-link" href="/reprogramming">Reprogramming</a>
         </div>
       </div>
     </nav>
@@ -53,49 +53,61 @@
       var firstPacket = true;
 
       socket.on('website',  function(message){    
-        if (firstPacket){
-          console.log("First packet: " + JSON.stringify(message));
-          for (var key of Object.keys(message)) {
-            if (!message[key].noData) {
-              var row = $('<tr/' + 'class=table-success' + ' id=' + key + '>');
-              row.append($('<td/>').html(key.replace('r', '')));
-              row.append($('<td/>').html(message[key].batteryLevel));
-              row.append($('<td/>').html(message[key].contollerStatus));
-              row.append($('<td/>').html(message[key].tackleStatus));
-            }
-            else {
-              var row = $('<tr/' + 'class=table-active' + ' id=' + key + '>');
-              row.append($('<td/>').html(key.replace('r', '')));
-              row.append($('<td/>').html(""));
-              row.append($('<td/>').html(""));
-              row.append($('<td/>').html(""));
-            }
-            $('#summtable').append(row); 
+        try {
+          if (firstPacket){
+            console.log("First packet: " + JSON.stringify(message));
+            for (var key of Object.keys(message)) {
+              if (!message[key].noData) {
+                var row = $('<tr/ class=table-success id=' + key + '>');
+                row.append($('<td/>').html(key.replace('r', '')));
+                row.append($('<td/>').html(message[key].batteryLevel));
+                row.append($('<td/>').html(message[key].contollerStatus));
+                row.append($('<td/>').html(message[key].tackleStatus));
+              }
+              else {
+                var row = $('<tr/ class=table-active id=' + key + '>');
+                row.append($('<td/>').html(key.replace('r', '')));
+                row.append($('<td/>').html(""));
+                row.append($('<td/>').html(""));
+                row.append($('<td/>').html(""));
+              }
+              $('#summtable').append(row); 
+            } 
+            firstPacket = false;
+          }
+          else {
+            // Sample message: "{"1":{"batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","newData":true,"noData":false},"2":{"newData":false,"noData":true}, ..."
+            console.log("New packet: " + JSON.stringify(message));
+            for (var key of Object.keys(message)) {
+              if (message[key].noData) {
+                var row = $('<tr/ class=table-active id=' + key + '>');
+                row.append($('<td/>').html(key.replace('r', '')));
+                row.append($('<td/>').html(""));
+                row.append($('<td/>').html(""));
+                row.append($('<td/>').html(""));
+                $('#' + key).replaceWith(row);
+              }
+              else if (message[key].newData) {
+                var row = $('<tr/ id=' + key + '>');
+                
+                row.append($('<td/ class=table-success >').html(key.replace('r', '')));
+                
+                row.append($('<td/ class=table-success >').html(message[key].batteryLevel));
+                
+                if (message[key].contollerStatus == "Disconnected") row.append($('<td/ class=table-info>').html(message[key].contollerStatus));
+                else row.append($('<td/ class=table-success >').html(message[key].contollerStatus));
+                
+                if (message[key].tackleStatus == "Tackled") row.append($('<td/ class=table-danger>').html(message[key].tackleStatus));
+                else row.append($('<td/ class=table-success>').html(message[key].tackleStatus));
+                
+                $('#' + key).replaceWith(row);
+              }
+            } 
           } 
-          firstPacket = false;
         }
-        else {
-          // Sample message: "{"1":{"batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","newData":true,"noData":false},"2":{"newData":false,"noData":true}, ..."
-          console.log("New packet: " + JSON.stringify(message));
-          for (var key of Object.keys(message)) {
-            if (message[key].noData) {
-              var row = $('<tr/' + 'class=table-active' + ' id=' + key + '>');
-              row.append($('<td/>').html(key.replace('r', '')));
-              row.append($('<td/>').html(""));
-              row.append($('<td/>').html(""));
-              row.append($('<td/>').html(""));
-              $('#' + key).replaceWith(row);
-            }
-            else if (message[key].newData) {
-              var row = $('<tr/' + 'class=table-success' + ' id=' + key + '>');
-              row.append($('<td/>').html(key.replace('r', '')));
-              row.append($('<td/>').html(message[key].batteryLevel));
-              row.append($('<td/' + 'class=' + message[key].tackleStatus +'>').html(message[key].contollerStatus));
-              row.append($('<td/>').html(message[key].tackleStatus));
-              $('#' + key).replaceWith(row);
-            }
-          } 
-        }      
+        catch(err) {
+          console.log("Error: " + err.message);
+        }  
       })
     </script>
   </body>

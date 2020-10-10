@@ -59,35 +59,45 @@ var packet = {"r1" : {"newData" : true, "noData" : false},
 
 
 esp32mqtt.on('message', function (topic, message) {
-  var data = JSON.parse(message);
-  // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
-  // Sample command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"1\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
+  try {
+    var data = JSON.parse(message);
   
-  //console.log("\nOld packet: " + JSON.stringify(packet));
-  //console.log("New data: " + JSON.stringify(data));
+    // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
+    // Sample command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"1\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
+    
+    //console.log("\nOld packet: " + JSON.stringify(packet));
+    //console.log("New data: " + JSON.stringify(data));
 
-  if(packet.hasOwnProperty(data.robotNumber)){
-    var key = data.robotNumber;
-    delete data.robotNumber;
-    packet[key] = data;
-    packet[key].newData = true;
-    packet[key].noData = false;
+    if(packet.hasOwnProperty(data.robotNumber)){
+      var key = data.robotNumber;
+      delete data.robotNumber;
+      packet[key] = data;
+      packet[key].newData = true;
+      packet[key].noData = false;
+    }
+    
+    //console.log("Shortened data: " + JSON.stringify(data));
+    //console.log("New esp packet: " + JSON.stringify(packet));
+
+    //io.sockets.emit('website', packet);
   }
-  
-  //console.log("Shortened data: " + JSON.stringify(data));
-  //console.log("New esp packet: " + JSON.stringify(packet));
-
-  //io.sockets.emit('website', packet);
+  catch (err) {
+    console.log("Error: " + err.message);
+  }
 })
 
 function sendIntervalPacket(){
-  
-  io.sockets.emit('website', packet);
-  console.log("New interval packet: " + JSON.stringify(packet));
+  try {
+    io.sockets.emit('website', packet);
+    //console.log("New interval packet: " + JSON.stringify(packet));
 
-  for (var key of Object.keys(packet)) {
-    if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
-    if (packet[key].newData) packet[key].newData = false;
+    for (var key of Object.keys(packet)) {
+      if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
+      if (packet[key].newData) packet[key].newData = false;
+    }
+  }
+  catch (err) {
+    console.log("Error: " + err.message);
   }
 }
 

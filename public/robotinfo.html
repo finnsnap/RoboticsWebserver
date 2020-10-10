@@ -9,11 +9,11 @@
     <title>Robotic Dashboard</title>
     
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/superhero/bootstrap.min.css">
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="#">Robotic Football Command Center</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -28,23 +28,34 @@
     </nav>
     
     <div class="container">
-        <span class="rounded-lg bg-gray"></span>
+      <div class="row">
+        
+        <div class="col">
+          <div class="container py-4">
+            <div class="card text-white bg-secondary p-0">
+              <div class="card-header">Header</div>
+              <div class="card-body">
+                <h4 class="card-title">Secondary card title</h4>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="container py-4">
+            <div class="card text-white bg-secondary p-0">
+              <div class="card-header">Header</div>
+              <div class="card-body">
+                <h4 class="card-title">Secondary card title</h4>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
     </div>
     
-    <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <button type="button" class="btn btn-primary">Primary</button>
-        </div>
-        <div class="col-sm">
-          <button type="button" class="btn btn-secondary">Secondary</button>
-        </div>
-        <div class="col-sm">
-          <button type="button" class="btn btn-danger">Danger</button>
-        </div>
-      </div>
-    </div>
-
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>  
     <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
@@ -53,19 +64,8 @@
       const socket = io(); //load socket.io-client and connect to the host that serves the page
       console.log("Started sockets");
 
-      socket.on('message',  function(data){    
-        var message = JSON.parse(data);
-        // Sample message: {"robotName":"ESP32","batteryLevel":"33","contollerStatus":"Connected","timeSinceReset":76038}
-        console.log("Recieved message: " + data.toString() + "\nrobotName: " + message.robotName + "\nbatteryLevel: " + message.batteryLevel + "\ncontollerStatus: " + message.contollerStatus + "\ntimeSinceReset: " + message.timeSinceReset);
-
-        document.getElementById("robotName").innerHTML = message.robotName; 
-        document.getElementById("batteryLevel").innerHTML = message.batteryLevel; 
-        document.getElementById("contollerStatus").innerHTML = message.contollerStatus; 
-        document.getElementById("timeSinceReset").innerHTML = message.timeSinceReset; 
-      })
-
-      socket.on('test',  function(data){    
-        console.log("Received stuff: " + data);
+      socket.on('website',  function(data){    
+        console.log("New Packet: " + JSON.stringify(message));
       })
     </script>
     
