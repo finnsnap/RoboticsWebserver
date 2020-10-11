@@ -50,11 +50,24 @@ esp32mqtt.on('connect', function () {
   esp32mqtt.subscribe('esp32/output') 
 })
 
-var packet = {"r1" : {"newData" : true, "noData" : false},
-              "r2" : {"newData" : true, "noData" : false},
+var packet = {"r75" : {"newData" : true, "noData" : false},
+              "r82" : {"newData" : true, "noData" : false},
+              "rK9" : {"newData" : true, "noData" : false},
+              "r9" : {"newData" : true, "noData" : false},
+              "r7" : {"newData" : true, "noData" : false},
               "r3" : {"newData" : true, "noData" : false},
-              "r4" : {"newData" : true, "noData" : false},
-              "r5" : {"newData" : true, "noData" : false}
+              "r12" : {"newData" : true, "noData" : false},
+              "r16" : {"newData" : true, "noData" : false},
+              "r35" : {"newData" : true, "noData" : false},
+              "r40" : {"newData" : true, "noData" : false},
+              "r42" : {"newData" : true, "noData" : false},
+              "r44" : {"newData" : true, "noData" : false},
+              "r53" : {"newData" : true, "noData" : false},
+              "r68" : {"newData" : true, "noData" : false},
+              "r74" : {"newData" : true, "noData" : false},
+              "r81" : {"newData" : true, "noData" : false},
+              "r85" : {"newData" : true, "noData" : false},
+              "r88" : {"newData" : true, "noData" : false}
             };
 
 
