@@ -79,7 +79,7 @@ esp32mqtt.on('message', function (topic, message) {
     // Sample command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"1\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
     
     //console.log("\nOld packet: " + JSON.stringify(packet));
-    //console.log("New data: " + JSON.stringify(data));
+    console.log("New data: " + JSON.stringify(data));
 
     if(packet.hasOwnProperty(data.robotNumber)){
       var key = data.robotNumber;
