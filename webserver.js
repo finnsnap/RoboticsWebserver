@@ -31,7 +31,7 @@ app.get('/reprogramming', function (req, res) {
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect CSS bootstrap
-app.use('/binary', express.static(__dirname + '/public/Robotic_Football_Modular_AIO_ESP.ino.esp32.bin')); // redirect CSS bootstrap
+app.use('/public', express.static(__dirname + '/public')); // redirect CSS bootstrap
 
 // Handle connection
 io.on('connection', function(socket) {  
@@ -80,7 +80,7 @@ esp32mqtt.on('message', function (topic, message) {
     // Sample command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"1\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
     
     //console.log("\nOld packet: " + JSON.stringify(packet));
-    console.log("New data: " + JSON.stringify(data));
+    //console.log("New data: " + JSON.stringify(data));
 
     if(packet.hasOwnProperty(data.robotNumber)){
       var key = data.robotNumber;
