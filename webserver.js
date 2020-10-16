@@ -31,6 +31,7 @@ app.get('/reprogramming', function (req, res) {
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect CSS bootstrap
+app.use('/binary', express.static(__dirname + '/public/Robotic_Football_Modular_AIO_ESP.ino.esp32.bin')); // redirect CSS bootstrap
 
 // Handle connection
 io.on('connection', function(socket) {  
