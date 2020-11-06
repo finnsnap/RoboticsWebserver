@@ -1,5 +1,8 @@
 var http = require('http');
 var express = require("express");
+const path = require('path');
+const fb = require('./index.js');
+
 var app = express();
 
 var server = http.createServer(app);
@@ -17,21 +20,22 @@ var esp32mqtt  = mqtt.connect('mqtt://localhost')
 // Register the index route that returns the HTML file
 app.get('/', function (req, res) {
   console.log("Homepage");
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(__dirname + '/public/html/home.html');
 });
 app.get('/robotinfo', function (req, res) {
   console.log("Robot Info");
-  res.sendFile(__dirname + '/public/robotinfo.html');
+  res.sendFile(__dirname + '/public/html/robotinfo.html');
 });
 app.get('/reprogramming', function (req, res) {
   console.log("Reprogramming");
-  res.sendFile(__dirname + '/public/reprogramming.html');
+  res.sendFile(__dirname + '/public/html/template.html');
 });
 
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect CSS bootstrap
-app.use('/public', express.static(__dirname + '/public')); // redirect CSS bootstrap
+app.use('/css', express.static(__dirname + '/public/css')); // redirect CSS bootstrap
+app.use('/js', express.static(__dirname + '/public/js')); // redirect CSS bootstrap
 
 // Handle connection
 io.on('connection', function(socket) {  
@@ -116,3 +120,43 @@ function sendIntervalPacket(){
 }
 
 setInterval(sendIntervalPacket, 250);
+
+
+
+
+
+
+
+
+fb.configure({
+  removeLockString: true,
+
+  /*
+   * Example of otherRoots.
+   * The other roots are listed and displayed, but their
+   * locations need to be calculated by the server.
+   * See OTHERROOTS in the app.
+   */
+  otherRoots: [ ]
+});
+
+app.get('/b', function(req, res) {
+  let file;
+  if (req.query.r === '/tmp') {
+
+      /*
+       * OTHERROOTS
+       * This is an example of a manually calculated path.
+       */
+      file = path.join(req.query.r,req.query.f);
+  } else {
+      file = path.join(dir,req.query.f);
+  }
+  res.sendFile(file);
+});
+
+
+var dir =  "/home/finnsnap/RoboticsWebserver/public"
+fb.setcwd(dir);
+
+app.get('/files', fb.get);
