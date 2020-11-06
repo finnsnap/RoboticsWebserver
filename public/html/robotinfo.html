@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html land="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web interface for MQTT over Websockets">
+    <meta name="author" content="Philip Wig">
+
+    <title>Robotic Dashboard</title>
+    
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/superhero/bootstrap.min.css">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Robotic Football Command Center</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="/robotinfo">Robot Information</a>
+          <a class="nav-item nav-link" href="/reprogramming">Reprogramming</a>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container-fluid mt-4">
+      <div class="row justify-content-center">
+        
+        <div class="col-auto mb-3">
+          <!-- bg-success, bg-danger, bg-warning, bg-info, bg-secondary-->
+            <div class="card">
+                <h4 class="card-header card-title">
+                  Robot 72
+                  <button type="button" class="btn btn-primary ml-3">Secondary</button>
+                </h4>
+                <div class="card-body p-0">
+                  <h5 class="card-text p-2 text-left m-0">Status</h5>
+
+                  <ul class="list-group list-group-flush p-2 w-80">
+                    <li class="list-group-item">Contoller</li>
+                    <li class="list-group-item">Tackle</li>
+                    <li class="list-group-item">Battery</li>
+                  </ul>
+
+                  <h5 class="card-text p-2 text-left m-0">Info</h5>
+
+                  <ul class="list-group list-group-flush p-2">
+
+                    <li class="list-group-item">Position</li>
+                    <li class="list-group-item">Mac Address: 02:34:34:34</li>
+                    <li class="list-group-item">IP Address: 02:34:34:34</li>
+                    <li class="list-group-item">Code version</li>
+                  </ul>
+
+                </div>
+            </div>
+        </div>          
+        
+        <div class="col-auto mb-3">
+          <!-- bg-success, bg-danger, bg-warning, bg-info, bg-secondary-->
+            <div class="card">
+                <h4 class="card-header card-title bg-success">
+                  Robot 72
+                </h4>
+                <div class="card-body p-0">
+                  <h5 class="card-text p-2 text-left m-0">Status</h5>
+
+                  <ul class="list-group list-group-flush p-2 w-80">
+                    <li class="list-group-item bg-info">Contoller</li>
+                    <li class="list-group-item bg-danger">Tackle</li>
+                    <li class="list-group-item bg-success">Battery</li>
+                  </ul>
+
+                  <h5 class="card-text p-2 text-left m-0">Info</h5>
+
+                  <ul class="list-group list-group-flush p-2">
+
+                    <li class="list-group-item">Position</li>
+                    <li class="list-group-item">Mac Address: 02:34:34:34</li>
+                    <li class="list-group-item">IP Address: 02:34:34:34</li>
+                    <li class="list-group-item">Code version</li>
+                  </ul>
+                  <button type="button" class="btn btn-primary p-2">Reprogram</button>
+                  <button type="button" class="btn btn-primary p-2">Change stuff</button>
+
+                </div>
+            </div>
+        </div>   
+        
+        <div class="col-auto mb-3">
+          <!-- bg-success, bg-danger, bg-warning, bg-info, bg-secondary-->
+            <div class="card">
+                <h4 class="card-header card-title">
+                  Robot 72
+                  <button type="button" class="btn btn-primary ml-3">Secondary</button>
+                </h4>
+                <div class="card-body p-0">
+                  <h5 class="card-text p-2 text-left m-0">Status</h5>
+
+                  <ul class="list-group list-group-flush p-2 w-80">
+                    <li class="list-group-item">Contoller</li>
+                    <li class="list-group-item">Tackle</li>
+                    <li class="list-group-item">Battery</li>
+                  </ul>
+
+                  <h5 class="card-text p-2 text-left m-0">Info</h5>
+
+                  <ul class="list-group list-group-flush p-2">
+
+                    <li class="list-group-item">Position</li>
+                    <li class="list-group-item">Mac Address: 02:34:34:34</li>
+                    <li class="list-group-item">IP Address: 02:34:34:34</li>
+                    <li class="list-group-item">Code version</li>
+                  </ul>
+
+                </div>
+            </div>
+        </div>   
+
+
+          <div class="col-auto mb-3">
+              <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                      <h5 class="card-title">Card title</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="#" class="card-link">Card link</a>
+                      <a href="#" class="card-link">Another link</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+    
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>  
+    <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
+    
+    <script>
+      const socket = io(); //load socket.io-client and connect to the host that serves the page
+      console.log("Started sockets");
+
+      socket.on('website',  function(data){    
+        console.log("New Packet: " + JSON.stringify(message));
+      })
+    </script>
+    
+
+  </body>
+</html> 
