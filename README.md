@@ -12,6 +12,8 @@ npx nodemon webserver.js to start webserver
 * https://esp32.com/viewtopic.php?t=3316
 * https://github.com/me-no-dev/ESPAsyncWebServer/issues/542
 
+## Reprogramming
+Send command --> Recieve response --> Display whether reprogramming was sucsessful or not
 
 ## TODO
 * Make Robot Information page respond to actual data, all robots will be displayed no matter what? Or only display connected robots, make all robot info dynamic and actually from robot messages

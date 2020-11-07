@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web interface for MQTT over Websockets">
+    <meta name="author" content="Philip Wig">
+
+    <!-- make node integration compatible -->
+    <!-- <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script> -->
+
+    
+    <title>Robotic Dashboard</title>
+
+    <link rel="stylesheet" href="/css/superhero/bootstrap.min.css">
+    <link rel="stylessheet" href="/css/dataTables.bootstrap4.min.css"/>
+    <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+
+    
+    <!-- <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>-->
+ 
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Robotic Football Command Center</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="/robotinfo">Robot Information</a>
+          <a class="nav-item nav-link" href="/reprogramming">Reprogramming</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <!--File Browser-->
+          <div class="container mt-4">
+            <div class="panel panel-default mainpanel">
+              <div class="panel-heading">
+                File Browser
+                <span class="up">
+                  <i class="fa fa-level-up"></i> Up
+                </span>
+                <span class="refresh">
+                  <i class="fa fa-refresh"></i> Refresh
+                </span>
+              </div>
+              <div class="panel-body">
+                <table class="linksholder"></table>
+              </div>
+            </div>
+          </div>
+
+          <!--File Uploader-->
+          <div class="container mt-4">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="singleupload-tab" data-toggle="tab" href="#singleupload" role="tab"
+                  aria-controls="home" aria-selected="true">Single Upload</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="multipleupload-tab" data-toggle="tab" href="#multipleupload" role="tab"
+                  aria-controls="profile" aria-selected="false">Multiple Upload</a>
+              </li>
+          
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <!--Single Upload-->
+              <div class="tab-pane fade show active" id="singleupload" role="tabpanel" aria-labelledby="home-tab">
+                  <div class="container mt-4">
+                    <form id="multipleUploadForm" action="/uploadmultiple" enctype="multipart/form-data" method="POST">
+                      <div class="form-group">
+                        Select File:
+                        <input type="file" name="myFiles" id="singleFileInput" multiple />
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <span id="multipleUploadstatus"></span>
+                    </form>
+                  </div>
+              </div>
+
+              <!--Multiple Upload-->
+              <div class="tab-pane fade" id="multipleupload" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="container mt-4">
+                  <form id="simgleUploadForm" action="/uploadfile" enctype="multipart/form-data" method="POST">
+                    <div class="form-group">
+                      Select File:
+                      <input type="file" name="myFile" id="multipleFileInput" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <span id="multipleUploadstatus"></span>
+                  </form>
+                </div>
+              </div>
+            </div>
+          
+          </div>         
+        </div>
+        <div class="col">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+            <label class="form-check-label" for="defaultCheck1">
+              Default checkbox
+            </label>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+  </div>     
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.form.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>  
+    <script src="/js/jquery.dataTables.min.js"></script>
+    <script src="/js/app.js"></script>
+  </body>
+</html>

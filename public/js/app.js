@@ -117,34 +117,50 @@ jQuery(function($){
     }
   });
 
-    $('#simgleUploadForm').submit(function() {
-      $("#singleUploadstatus").empty().text("File is uploading...");
-      $(this).ajaxSubmit({
-        error: function(xhr) {
-          status('Error: ' + xhr.status);
-        },
-        success: function(response) {
-          console.log(response)
-          $("#singleUploadstatus").empty().text(response);
-        }
-      });
-
-      return false;
-    });   
-    
-    $('#multipleUploadForm').submit(function() {
-      $("#multipleUploadstatus").empty().text("File is uploading...");
-      $(this).ajaxSubmit({
-        error: function(xhr) {
-          status('Error: ' + xhr.status);
-        },
-        success: function(response) {
-          console.log(response)
-          $("#multipleUploadstatus").empty().text(response);
-        }
-      });
-
-      return false;
+  $('#simgleUploadForm').on("submit", function() {
+    $("#singleUploadstatus").empty().text("File is uploading...");
+    $(this).ajaxSubmit({
+      error: function(xhr) {
+        status('Error: ' + xhr.status);
+      },
+      success: function(response) {
+        console.log(response)
+        $("#singleUploadstatus").empty().text(response);
+      }
     });
 
+    return false;
+  });   
+    
+  $('#multipleUploadForm').on("submit", function() {
+    $("#multipleUploadstatus").empty().text("File is uploading...");
+    $(this).ajaxSubmit({
+      error: function(xhr) {
+        status('Error: ' + xhr.status);
+      },
+      success: function(response) {
+        console.log(response)
+        $("#multipleUploadstatus").empty().text(response);
+      }
+    });
+
+    if (!currentPath) {
+      $.get('/files?path=').then(function (data) {
+        table.fnClearTable();
+        table.fnAddData(data);
+        console.log("Refresh file explorer");
+      });
+    }
+    else {
+      var path = currentPath;
+      $.get('/files?path=' + path).then(function (data) {
+        table.fnClearTable();
+        table.fnAddData(data);
+        currentPath = path;
+        console.log("Refresh file explorer");
+      });
+    }
+
+    return false;
+  });
 });

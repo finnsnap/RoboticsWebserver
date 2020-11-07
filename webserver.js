@@ -31,7 +31,7 @@ app.get('/robotinfo', function (req, res) {
 });
 app.get('/reprogramming', function (req, res) {
   console.log("Reprogramming");
-  res.sendFile(__dirname + '/public/html/template.html');
+  res.sendFile(__dirname + '/public/html/reprogramming.html');
 });
 
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
@@ -161,9 +161,8 @@ app.get('/b', function(req, res) {
 });
 
 
-var dir =  "/home/finnsnap/RoboticsWebserver/public"
+var dir =  "/Users/finnvik/Documents/Robotics/RoboticsWebserver/public"
 fb.setcwd(dir);
-
 app.get('/files', fb.get);
 
 
@@ -176,8 +175,7 @@ var storage = multer.diskStorage({
   },
   filename: function(req, file, cb) {
     cb(null, file.originalname);//file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-}
-})
+}});
  
 var upload = multer({ storage: storage })
 
@@ -190,7 +188,7 @@ app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
     return res.send("Error uploading file.");
   }
   res.send("File is uploaded");
-})
+});
 
 // Uploading multiple files
 app.post('/uploadmultiple', upload.array('myFiles', 12), (req, res, next) => {
@@ -201,4 +199,4 @@ app.post('/uploadmultiple', upload.array('myFiles', 12), (req, res, next) => {
     return res.send("Error uploading file.");
   }
   res.send("Files are uploaded");
-})
+});
