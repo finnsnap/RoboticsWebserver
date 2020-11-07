@@ -44,19 +44,42 @@
                    <span class="up">
                     <i class="fa fa-level-up"></i> Up
                    </span> 
+                   <span class="refresh">
+                    <i class="fa fa-refresh"></i> Refresh
+                   </span> 
            </div>
       <div class="panel-body">
               <table class="linksholder">
               </table>
-      </div>
-    
+      </div>    
+    </div>
+    <div class="container mt-4">
+       <!--  SINGLE FILE -->
+      <form id="simgleUploadForm" action="/uploadfile" enctype="multipart/form-data" method="POST"> 
+        Select images: 
+        <input type="file" name="myFile" />
+        <input type="submit" value="Upload Image">
+        <span id = "singleUploadstatus"></span>
+      </form>
+
+
+      <!-- MULTIPLE FILES -->
+
+      <form id="multipleUploadForm"action="/uploadmultiple"  enctype="multipart/form-data" method="POST">
+        Select images: 
+        <input type="file" name="myFiles" multiple>
+        <input type="submit" value="Upload your files"/>
+        <span id = "multipleUploadstatus"></span>
+
+      </form>
     </div>
 
   </div>     
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.form.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>  
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/app.js"></script>
-
+    
   </body>
 </html>

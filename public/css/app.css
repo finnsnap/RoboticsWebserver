@@ -17,3 +17,4 @@ body { position:relative; top:10%; color: white!important;}
 .dataTables_info { margin-top: 10px;}
 
 .up { margin-left: 20px; border:solid 1px white; cursor:pointer; width:100px; padding-left: 10px; padding-right:10px; }
+.refresh { margin-left: 20px; border:solid 1px white; cursor:pointer; width:100px; padding-left: 10px; padding-right:10px; }

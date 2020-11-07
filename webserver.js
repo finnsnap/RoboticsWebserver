@@ -1,9 +1,12 @@
-var http = require('http');
-var express = require("express");
+const http = require('http');
+const express = require("express");
+const bodyParser = require("body-parser");
+const multer = require('multer');
 const path = require('path');
 const fb = require('./index.js');
 
 var app = express();
+app.use(bodyParser.json());
 
 var server = http.createServer(app);
 
@@ -36,6 +39,8 @@ app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redi
 app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect CSS bootstrap
 app.use('/css', express.static(__dirname + '/public/css')); // redirect CSS bootstrap
 app.use('/js', express.static(__dirname + '/public/js')); // redirect CSS bootstrap
+app.use('/js', express.static(__dirname + '/node_modules/jquery-form/dist')); // redirect CSS bootstrap
+
 
 // Handle connection
 io.on('connection', function(socket) {  
@@ -160,3 +165,40 @@ var dir =  "/home/finnsnap/RoboticsWebserver/public"
 fb.setcwd(dir);
 
 app.get('/files', fb.get);
+
+
+
+
+// SET STORAGE
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/binaries')
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);//file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+}
+})
+ 
+var upload = multer({ storage: storage })
+
+// Upload single file
+app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
+  const file = req.file
+  if (!file) {
+    const error = new Error('Please upload a file')
+    error.httpStatusCode = 400
+    return res.send("Error uploading file.");
+  }
+  res.send("File is uploaded");
+})
+
+// Uploading multiple files
+app.post('/uploadmultiple', upload.array('myFiles', 12), (req, res, next) => {
+  const files = req.files
+  if (!files) {
+    const error = new Error('Please choose files')
+    error.httpStatusCode = 400
+    return res.send("Error uploading file.");
+  }
+  res.send("Files are uploaded");
+})
