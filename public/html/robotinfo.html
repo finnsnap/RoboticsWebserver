@@ -100,8 +100,9 @@
 
                 if (!message[key].noData) {
                   robotData.data = "bg-success";
-                  if (message[key].contollerStatus == "Disconnected") robotData.contoller = "bg-danger";
-                  else robotData.contoller = "bg-success";
+                  
+                  if (message[key].contollerStatus == "Connected") robotData.contoller = "bg-success";
+                  else robotData.contoller = "bg-danger";
                   
                   if (message[key].tackleStatus == "Tackled") robotData.tackle = "bg-danger";
                   else robotData.tackle = "bg-success";
@@ -149,7 +150,9 @@
                   else robotData.tackle = "bg-success";
                 }
 
-                $('#' + key).replaceWith(Mustache.render($("#template").html(), robotData));
+                if (message[key].noData) {
+                  $('#' + key).replaceWith(Mustache.render($("#template").html(), robotData));
+                }
               }
             }
           }

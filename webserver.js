@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fb = require('./index.js');
 
+//
 var app = express();
 app.use(bodyParser.json());
 
@@ -20,30 +21,35 @@ var mqtt = require('mqtt');
 const { fdatasync } = require('fs');
 var esp32mqtt  = mqtt.connect('mqtt://localhost')
 
-// Register the index route that returns the HTML file
+// Route the homepage html file
 app.get('/', function (req, res) {
   console.log("Homepage");
   res.sendFile(__dirname + '/public/html/home.html');
 });
+
+// Route the robotinfo page html file
 app.get('/robotinfo', function (req, res) {
   console.log("Robot Info");
   res.sendFile(__dirname + '/public/html/robotinfo.html');
 });
+
+// Route the reprogramming page html file
 app.get('/reprogramming', function (req, res) {
   console.log("Reprogramming");
   res.sendFile(__dirname + '/public/html/reprogramming.html');
 });
 
+// Redirects for all CSS and JS files
+app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect bootswatch CSS
+app.use('/css', express.static(__dirname + '/public/css')); // redirect custom CSS
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
-app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect CSS bootstrap
-app.use('/css', express.static(__dirname + '/public/css')); // redirect CSS bootstrap
-app.use('/js', express.static(__dirname + '/public/js')); // redirect CSS bootstrap
-app.use('/js', express.static(__dirname + '/node_modules/jquery-form/dist')); // redirect CSS bootstrap
-app.use('/js', express.static(__dirname + '/node_modules/mustache')); // redirect CSS bootstrap
+app.use('/js', express.static(__dirname + '/node_modules/jquery-form/dist')); // redirect jquery-form JS
+app.use('/js', express.static(__dirname + '/node_modules/mustache')); // redirect mustache JS
+app.use('/js', express.static(__dirname + '/public/js')); // redirect custom JS
 
 
-// Handle connection
+// Handle socketio connection event from a client
 io.on('connection', function(socket) {  
   console.log('A user connected');
   io.sockets.emit('website', packet);
@@ -52,15 +58,18 @@ io.on('connection', function(socket) {
     console.log(data);
   });
 
+  // Handle disconnection event from a client
   socket.on('disconnect', function () {
      console.log('A user disconnected');
   });
 });
 
+// Handle mqtt connection event to mosquitto server 
 esp32mqtt.on('connect', function () {
   esp32mqtt.subscribe('esp32/output') 
 })
 
+// JSON packet to hold data about all the robots
 var packet = {"r75" : {"newData" : true, "noData" : false},
               "r82" : {"newData" : true, "noData" : false},
               "rK9" : {"newData" : true, "noData" : false},
@@ -81,13 +90,13 @@ var packet = {"r75" : {"newData" : true, "noData" : false},
               "r88" : {"newData" : true, "noData" : false}
             };
 
-
+// Handle event when a message is recieved from an esp32
 esp32mqtt.on('message', function (topic, message) {
   try {
     var data = JSON.parse(message);
   
     // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
-    // Sample command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"r75\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
+    // Sample manual command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"r75\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
     
     //console.log("\nOld packet: " + JSON.stringify(packet));
     //console.log("New data: " + JSON.stringify(data));
@@ -102,8 +111,6 @@ esp32mqtt.on('message', function (topic, message) {
 
     //console.log("Shortened data: " + JSON.stringify(data));
     //console.log("New esp packet: " + JSON.stringify(packet));
-
-    //io.sockets.emit('website', packet);
   }
   catch (err) {
     console.log("Error: " + err.message);
@@ -125,6 +132,7 @@ function sendIntervalPacket(){
   }
 }
 
+// Sends a JSON packet at specified intervals
 setInterval(sendIntervalPacket, 250);
 
 
@@ -136,13 +144,6 @@ setInterval(sendIntervalPacket, 250);
 
 fb.configure({
   removeLockString: true,
-
-  /*
-   * Example of otherRoots.
-   * The other roots are listed and displayed, but their
-   * locations need to be calculated by the server.
-   * See OTHERROOTS in the app.
-   */
   otherRoots: [ ]
 });
 
@@ -162,7 +163,7 @@ app.get('/b', function(req, res) {
 });
 
 
-var dir =  "/Users/finnvik/Documents/Robotics/RoboticsWebserver/public"
+var dir = process.cwd() + "/public";
 fb.setcwd(dir);
 app.get('/files', fb.get);
 
