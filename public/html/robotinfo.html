@@ -41,28 +41,32 @@
 
     <!-- here is your template -->
     <script id="template" type="text/template">
-            <div class="card m-3" id="{{name}}">
+            <div class="card m-3" id="{{cardID}}" style="width:17rem;">
                 <h4 class="card-header card-title {{data}}">{{name}}</h4>
                 
                 <div class="card-body p-0">
-                  <h5 class="card-text p-2 text-left m-0">Status</h5>
+                  <h5 class="card-text p-3 m-0 text-left">Status</h5>
 
-                  <ul class="list-group list-group-flush p-2 w-80">
-                    <li class="list-group-item m-1 {{contoller}}">Contoller</li>
-                    <li class="list-group-item m-1 {{tackle}}">Tackle</li>
-                    <li class="list-group-item m-1 {{battery}}">Battery</li>
+                  <ul class="list-group list-group-flush p-3 w-80">
+                    <li class="list-group-item my-1 {{contoller}}">Contoller</li>
+                    <li class="list-group-item my-1 {{tackle}}">Tackle</li>
+                    <li class="list-group-item my-1 {{battery}}">Battery</li>
                   </ul>
 
-                  <h5 class="card-text p-2 text-left m-0">Info</h5>
+                  <h5 class="card-text p-3 m-0 text-left">Info</h5>
 
-                  <ul class="list-group list-group-flush p-2">
-                    <li class="list-group-item">Position: {{position}}</li>
-                    <li class="list-group-item">Mac Address: {{macaddress}}</li>
-                    <li class="list-group-item">IP Address: {{ipaddress}}</li>
-                    <li class="list-group-item">Code version: {{version}}</li>
+                  <ul class="list-group list-group-flush p-0 mb-3">
+                    <li class="list-group-item px-4 m-0">Position: {{position}}</li>
+                    <li class="list-group-item px-4 m-0">Mac Address: {{macaddress}}</li>
+                    <li class="list-group-item px-4 m-0">IP Address: {{ipaddress}}</li>
+                    <li class="list-group-item px-4 m-0">Code version: {{version}}</li>
                   </ul>
-                  <button type="button" class="btn btn-primary p-2">Reprogram</button>
-                  <button type="button" class="btn btn-primary p-2">Change stuff</button>
+                  <!-- <div class="container">
+                    <div class="row">
+                      <button type="button" class="btn btn-primary w-50">Reprogram</button>
+                      <button type="button" class="btn btn-primary w-50">Change stuff</button>
+                    </div>
+                  </div> -->
 
                 </div>
             </div>
@@ -84,6 +88,7 @@
               
               for (var key of Object.keys(message)) {
                 var robotData = {
+                  cardID: "",
                   data: "bg-danger",
                   name: "",
                   contoller: "bg-info",
@@ -95,8 +100,8 @@
                   version: ""
                 }
                 
-                robotData.name = key;
-                robotData.name = robotData.name.replace('r', '');
+                robotData.cardID = key;
+                robotData.name = key.replace('r', '');
 
                 if (!message[key].noData) {
                   robotData.data = "bg-success";
@@ -125,6 +130,7 @@
 
               for (var key of Object.keys(message)) {
                 var robotData = {
+                  cardID: "",
                   data: "bg-danger",
                   name: "",
                   contoller: "bg-info",
@@ -135,8 +141,8 @@
                   ipaddress: "",
                   version: ""
                 }
-                robotData.name = key;
-                robotData.name = robotData.name.replace('r', '');
+                robotData.cardID = key;
+                robotData.name = key.replace('r', '');
 
                 if (message[key].newData) {
                   console.log("Key: " + key);
@@ -151,7 +157,7 @@
                 }
 
                 if (message[key].noData) {
-                  $('#' + key).replaceWith(Mustache.render($("#template").html(), robotData));
+                  //$('#' + key).replaceWith(Mustache.render($("#template").html(), robotData));
                 }
               }
             }
