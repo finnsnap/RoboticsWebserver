@@ -1,4 +1,11 @@
 ## Getting started
+
+### Prerequisites
+1. Raspberry Pi setup as routed accesss point. Helpful tutorial here [Setting up a Raspberry Pi as a routed wireless access point](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md)
+2. Mosquitto broker installed [How to Install Mosquitto Broker on Raspberry Pi](https://randomnerdtutorials.com/how-to-install-mosquitto-broker-on-raspberry-pi/)
+3. Nodejs and npm installed
+
+### Installation
 1. Clone the repo
 ```sh
 git clone https://github.com/finnsnap/RoboticsWebserver.git
