@@ -104,4 +104,15 @@ Send command --> Recieve response --> Display whether reprogramming was sucsessf
 * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
 * https://esp32.com/viewtopic.php?t=3316
 * https://github.com/me-no-dev/ESPAsyncWebServer/issues/542
+<<<<<<< HEAD
 * https://www.javascripttutorial.net/javascript-dom/javascript-checkbox/
+=======
+
+* [Setting up a Raspberry Pi headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md)
+* [Setting up a Raspberry Pi as a routed wireless access point](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md)
+* [Introduction to IoT: Build an MQTT Server Using Raspberry Pi](https://appcodelabs.com/introduction-to-iot-build-an-mqtt-server-using-raspberry-pi)
+* [Friendly toggle to enable/disable Raspberry Pi's as an access point](https://www.raspberrypi.org/forums/viewtopic.php?t=266214)
+* [Node.js and Raspberry Pi - Webserver with WebSocket](https://www.w3schools.com/nodejs/nodejs_raspberrypi_webserver_websocket.asp)
+* [mqtt-panel](https://github.com/fabaff/mqtt-panel)
+* [Node.js + Nginx](https://stackoverflow.com/questions/5009324/node-js-nginx-what-now)
+>>>>>>> 5c6b5903f7a07969c8c8e362ad95c6631ce6d6cc
