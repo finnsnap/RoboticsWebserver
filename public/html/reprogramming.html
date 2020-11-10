@@ -24,7 +24,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">Robotic Football Command Center</a>
+      <a class="navbar-brand" href="/">Robotic Football Command Center</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -104,42 +104,20 @@
           </div>         
         </div>
 
-        <div class="custom-control custom-switch">
-          <input type="checkbox" class="custom-control-input" id="customSwitch" checked="">
-          <label class="custom-control-label" for="customSwitch">Toggle this switch element</label>
-        </div>
-
         <div class="col">
-          <h1>Select Robots to Reprogram</h1>
-          <div id="checkboxes">
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitch1" checked="">
-              <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
-            </div>
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitch2" checked="">
-              <label class="custom-control-label" for="customSwitch2">Toggle this switch element</label>
-            </div>
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitch3" checked="">
-              <label class="custom-control-label" for="customSwitch3">Toggle this switch element</label>
-            </div>
-          </div>     
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="customSwitch4" checked="">
-            <label class="custom-control-label" for="customSwitch4">Toggle this switch element</label>
-          </div>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="customCheck5" checked="">
-            <label class="custom-control-label" for="customCheck5">Check this custom checkbox</label>
-          </div>
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="customSwitch6" checked="">
-            <label class="custom-control-label" for="customSwitch6">Toggle this switch element</label>
-          </div>
-          <button type="button" class="btn btn-primary" id="reprogramRobots">Submit</button>
-          <button type="button" class="btn btn-primary" id="checkUncheck">Check/Uncheck All</button>
+          <div class="container mt-4">
 
+            <h1>Select Robots to Reprogram</h1>
+            <div id="checkboxes"></div>
+            
+            <div class="pt-2">
+              <button type="button" class="btn btn-primary" id="reprogramRobots">Submit</button>
+              <button type="button" class="btn btn-primary" id="checkAll">Select All</button>
+              <button type="button" class="btn btn-primary" id="uncheckAll">Unselect All</button>
+              <button type="button" class="btn btn-primary" id="checkRandom">Random</button>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
@@ -154,18 +132,16 @@
 
 
     <script id="template" type="text/template">
-      <!-- <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" checked="" name="check" value="{{cardID}}"> {{name}}
-      </div> -->
+
       <div class="custom-control custom-switch">
-        <input type="checkbox" class="custom-control-input" id="{{cardID}}" checked="" name="check">
+        <input type="checkbox" class="custom-control-input" id="{{cardID}}" name="check">
         <label class="custom-control-label" for="{{cardID}}">{{name}}</label>
       </div>
+      <!-- <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="{{cardID}}" checked="" name="check">
+          <label class="custom-control-label" for="{{cardID}}">{{name}}</label>
+        </div> -->
       
-      <!-- <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" class="form-check-input" name="check" value="{{cardID}}">{{name}}
-        </label> -->
       </div> 
     </script>
 
@@ -203,16 +179,29 @@
         const checkboxes = document.querySelectorAll(`input[name="check"]:checked`);
         let values = [];
         checkboxes.forEach((checkbox) => {
-            values.push(checkbox.value);
+            values.push(checkbox.id);
         });
         socket.emit('reprogramming', values);
       });
 
-      $('#checkUncheck').on("click", function() {
+      $('#checkAll').on("click", function() {
         const cbs = document.querySelectorAll('input[name="check"]');
         cbs.forEach((cb) => {
-            cb.checked = !cb.checked;
+            cb.checked = true;
         });
+      });
+
+      $('#uncheckAll').on("click", function () {
+          const cbs = document.querySelectorAll('input[name="check"]');
+          cbs.forEach((cb) => {
+            cb.checked = false;
+          });
+        });
+      $('#checkRandom').on("click", function () {
+          const cbs = document.querySelectorAll('input[name="check"]');
+          cbs.forEach((cb) => {
+            cb.checked = Math.random() <= 0.5;
+          });
       });
     </script>
   </body>

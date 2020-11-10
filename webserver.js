@@ -57,6 +57,7 @@ io.on('connection', function(socket) {
   socket.on('reprogramming', function (data) {
     data.forEach((checkbox) => {
       esp32mqtt.publish(checkbox, "r");
+      console.log(checkbox);
     });
   });
 
