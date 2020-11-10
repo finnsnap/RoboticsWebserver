@@ -54,8 +54,10 @@ io.on('connection', function(socket) {
   console.log('A user connected');
   io.sockets.emit('website', packet);
 
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.on('reprogramming', function (data) {
+    data.forEach((checkbox) => {
+      esp32mqtt.publish(checkbox, "r");
+    });
   });
 
   // Handle disconnection event from a client

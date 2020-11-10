@@ -75,13 +75,13 @@
               <!--Single Upload-->
               <div class="tab-pane fade show active" id="singleupload" role="tabpanel" aria-labelledby="home-tab">
                   <div class="container mt-4">
-                    <form id="multipleUploadForm" action="/uploadmultiple" enctype="multipart/form-data" method="POST">
+                    <form id="simgleUploadForm" action="/uploadfile" enctype="multipart/form-data" method="POST">
                       <div class="form-group">
                         Select File:
-                        <input type="file" name="myFiles" id="singleFileInput" multiple />
+                        <input type="file" name="myFile" id="singleFileInput" single />
                       </div>
                       <button type="submit" class="btn btn-primary">Submit</button>
-                      <span id="multipleUploadstatus"></span>
+                      <span id="singleUploadstatus"></span>
                     </form>
                   </div>
               </div>
@@ -89,10 +89,10 @@
               <!--Multiple Upload-->
               <div class="tab-pane fade" id="multipleupload" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="container mt-4">
-                  <form id="simgleUploadForm" action="/uploadfile" enctype="multipart/form-data" method="POST">
+                  <form id="multipleUploadForm" action="/uploadmultiple" enctype="multipart/form-data" method="POST">
                     <div class="form-group">
                       Select File:
-                      <input type="file" name="myFile" id="multipleFileInput" />
+                      <input type="file" name="myFiles" id="multipleFileInput" multiple />
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                     <span id="multipleUploadstatus"></span>
@@ -100,31 +100,120 @@
                 </div>
               </div>
             </div>
-          
+
           </div>         
         </div>
+
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch" checked="">
+          <label class="custom-control-label" for="customSwitch">Toggle this switch element</label>
+        </div>
+
         <div class="col">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-            <label class="form-check-label" for="defaultCheck1">
-              Default checkbox
-            </label>
+          <h1>Select Robots to Reprogram</h1>
+          <div id="checkboxes">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="customSwitch1" checked="">
+              <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="customSwitch2" checked="">
+              <label class="custom-control-label" for="customSwitch2">Toggle this switch element</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="customSwitch3" checked="">
+              <label class="custom-control-label" for="customSwitch3">Toggle this switch element</label>
+            </div>
+          </div>     
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="customSwitch4" checked="">
+            <label class="custom-control-label" for="customSwitch4">Toggle this switch element</label>
           </div>
-          
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="customCheck5" checked="">
+            <label class="custom-control-label" for="customCheck5">Check this custom checkbox</label>
+          </div>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="customSwitch6" checked="">
+            <label class="custom-control-label" for="customSwitch6">Toggle this switch element</label>
+          </div>
+          <button type="button" class="btn btn-primary" id="reprogramRobots">Submit</button>
+          <button type="button" class="btn btn-primary" id="checkUncheck">Check/Uncheck All</button>
+
         </div>
       </div>
     </div>
 
-
-
-
-
-
-  </div>     
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery.form.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>  
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/app.js"></script>
+    <script src="/js/mustache.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
+
+
+    <script id="template" type="text/template">
+      <!-- <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" checked="" name="check" value="{{cardID}}"> {{name}}
+      </div> -->
+      <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="{{cardID}}" checked="" name="check">
+        <label class="custom-control-label" for="{{cardID}}">{{name}}</label>
+      </div>
+      
+      <!-- <div class="form-check">
+        <label class="form-check-label">
+          <input type="checkbox" class="form-check-input" name="check" value="{{cardID}}">{{name}}
+        </label> -->
+      </div> 
+    </script>
+
+    <script>
+      const socket = io(); //load socket.io-client and connect to the host that serves the page
+      console.log("Started sockets");
+      var firstPacket = true;
+
+      socket.on('website', function (message) {
+        try {
+          if (firstPacket) {
+            //console.log("First packet: " + JSON.stringify(message));
+              
+            for (var key of Object.keys(message)) {
+              var robotData = {
+                cardID: "",
+                data: "bg-danger",
+                name: "",
+              }
+                
+              robotData.cardID = key;
+              robotData.name = key.replace('r', '');
+
+              $("#checkboxes").append(Mustache.render($("#template").html(), robotData));
+            }
+            firstPacket = false;
+          }
+        }
+        catch (err) {
+          console.log("Error: " + err.message);
+        }
+      });
+
+      $('#reprogramRobots').on("click", function() {
+        const checkboxes = document.querySelectorAll(`input[name="check"]:checked`);
+        let values = [];
+        checkboxes.forEach((checkbox) => {
+            values.push(checkbox.value);
+        });
+        socket.emit('reprogramming', values);
+      });
+
+      $('#checkUncheck').on("click", function() {
+        const cbs = document.querySelectorAll('input[name="check"]');
+        cbs.forEach((cb) => {
+            cb.checked = !cb.checked;
+        });
+      });
+    </script>
   </body>
 </html>

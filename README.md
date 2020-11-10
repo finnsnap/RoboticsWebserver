@@ -104,3 +104,4 @@ Send command --> Recieve response --> Display whether reprogramming was sucsessf
 * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
 * https://esp32.com/viewtopic.php?t=3316
 * https://github.com/me-no-dev/ESPAsyncWebServer/issues/542
+* https://www.javascripttutorial.net/javascript-dom/javascript-checkbox/

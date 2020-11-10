@@ -133,7 +133,7 @@ jQuery(function($){
   });   
     
   $('#multipleUploadForm').on("submit", function() {
-    $("#multipleUploadstatus").empty().text("File is uploading...");
+    $("#multipleUploadstatus").empty().text("Files are uploading...");
     $(this).ajaxSubmit({
       error: function(xhr) {
         status('Error: ' + xhr.status);
