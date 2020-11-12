@@ -39,6 +39,7 @@ app.get('/reprogramming', function (req, res) {
   res.sendFile(__dirname + '/public/html/reprogramming.html');
 });
 
+
 // Redirects for all CSS and JS files
 app.use('/css', express.static(__dirname + '/node_modules/bootswatch/dist')); // redirect bootswatch CSS
 app.use('/css', express.static(__dirname + '/public/css')); // redirect custom CSS
@@ -49,6 +50,9 @@ app.use('/js', express.static(__dirname + '/node_modules/mustache')); // redirec
 app.use('/js', express.static(__dirname + '/public/js')); // redirect custom JS
 
 
+app.use('/public', express.static(__dirname + '/public'));
+
+
 // Handle socketio connection event from a client
 io.on('connection', function(socket) {  
   console.log('A user connected');
@@ -56,7 +60,7 @@ io.on('connection', function(socket) {
 
   socket.on('reprogramming', function (data) {
     data.forEach((checkbox) => {
-      esp32mqtt.publish(checkbox, "r");
+      esp32mqtt.publish(checkbox, "r -esp32.bin");
       console.log(checkbox);
     });
   });
@@ -70,6 +74,12 @@ io.on('connection', function(socket) {
 // Handle mqtt connection event to mosquitto server 
 esp32mqtt.on('connect', function () {
   esp32mqtt.subscribe('esp32/output') 
+  esp32mqtt.subscribe('esp32/input') 
+});
+
+esp32mqtt.on('esp32input', function (topic, message) {
+  console.log("MQTT input: " + data);
+   
 })
 
 // JSON packet to hold data about all the robots
@@ -95,30 +105,36 @@ var packet = {"r75" : {"newData" : true, "noData" : false},
 
 // Handle event when a message is recieved from an esp32
 esp32mqtt.on('message', function (topic, message) {
-  try {
-    var data = JSON.parse(message);
-  
-    // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
-    // Sample manual command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"r75\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
+  if (topic == "esp32/output"){
+    try {
+      var data = JSON.parse(message);
     
-    //console.log("\nOld packet: " + JSON.stringify(packet));
-    //console.log("New data: " + JSON.stringify(data));
+      // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
+      // Sample manual command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"r75\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
+      
+      //console.log("\nOld packet: " + JSON.stringify(packet));
+      //console.log("New data: " + JSON.stringify(data));
 
-    if(packet.hasOwnProperty(data.robotNumber)){
-      var key = data.robotNumber;
-      delete data.robotNumber;
-      packet[key] = data;
-      packet[key].newData = true;
-      packet[key].noData = false;
+      if(packet.hasOwnProperty(data.robotNumber)){
+        var key = data.robotNumber;
+        delete data.robotNumber;
+        packet[key] = data;
+        packet[key].newData = true;
+        packet[key].noData = false;
+      }
+
+      //console.log("Shortened data: " + JSON.stringify(data));
+      //console.log("New esp packet: " + JSON.stringify(packet));
     }
-
-    //console.log("Shortened data: " + JSON.stringify(data));
-    //console.log("New esp packet: " + JSON.stringify(packet));
+    catch (err) {
+      console.log("Error: " + err.message);
+    }
   }
-  catch (err) {
-    console.log("Error: " + err.message);
+  else if (topic == "esp32/input") {
+    console.log("New message: " + message);
   }
 })
+
 
 function sendIntervalPacket(){
   try {

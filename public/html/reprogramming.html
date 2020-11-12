@@ -180,6 +180,7 @@
         let values = [];
         checkboxes.forEach((checkbox) => {
             values.push(checkbox.id);
+            console.log(checkbox.id);
         });
         socket.emit('reprogramming', values);
       });
