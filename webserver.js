@@ -59,9 +59,9 @@ io.on('connection', function(socket) {
   io.sockets.emit('website', packet);
 
   socket.on('reprogramming', function (data) {
-    data.forEach((checkbox) => {
-      esp32mqtt.publish(checkbox, "r -esp32.bin");
-      console.log(checkbox);
+    data.id.forEach((checkbox) => {
+      esp32mqtt.publish(checkbox, "p -" + data.file);
+      console.log("Robot: " + checkbox + " Command:" + "p -" + data.file);
     });
   });
 
@@ -182,7 +182,7 @@ app.get('/b', function(req, res) {
 });
 
 
-var dir = process.cwd() + "/public";
+var dir = process.cwd() + "/public/binaries";
 fb.setcwd(dir);
 app.get('/files', fb.get);
 

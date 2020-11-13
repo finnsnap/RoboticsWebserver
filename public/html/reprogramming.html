@@ -108,13 +108,35 @@
           <div class="container mt-4">
 
             <h1>Select Robots to Reprogram</h1>
-            <div id="checkboxes"></div>
-            
-            <div class="pt-2">
-              <button type="button" class="btn btn-primary" id="reprogramRobots">Submit</button>
+
+            <div class="container my-2 px-0">
               <button type="button" class="btn btn-primary" id="checkAll">Select All</button>
               <button type="button" class="btn btn-primary" id="uncheckAll">Unselect All</button>
               <button type="button" class="btn btn-primary" id="checkRandom">Random</button>
+            </div>
+
+            <div class="container my-2 px-0">
+              <div id="checkboxes"></div>
+            </div>
+
+            <div class="container my-2 px-0">
+              <div class="form-group">
+                <label for="exampleSelect1">Select file to upload</label>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-8 p-0">
+                      <select class="form-control" id="fileSelect">
+                        <option value="">-- Please choose a file --</option>
+                      </select>
+                    </div>
+                    <div class="col-2">
+                      <button type="button" class="btn btn-primary" id="refreshOptions">Refresh</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="reprogramRobots">Submit</button>
+              <span id="reprogramStatus"></span>
             </div>
 
           </div>
@@ -167,6 +189,7 @@
 
               $("#checkboxes").append(Mustache.render($("#template").html(), robotData));
             }
+
             firstPacket = false;
           }
         }
@@ -174,15 +197,34 @@
           console.log("Error: " + err.message);
         }
       });
+      
+      // Find all bin files to fill select box
+      findBinFiles();
 
       $('#reprogramRobots').on("click", function() {
-        const checkboxes = document.querySelectorAll(`input[name="check"]:checked`);
-        let values = [];
-        checkboxes.forEach((checkbox) => {
-            values.push(checkbox.id);
-            console.log(checkbox.id);
-        });
-        socket.emit('reprogramming', values);
+        $('#reprogramStatus').text("");
+        if ($("#fileSelect").val().search(".bin") >= 0){
+          const checkboxes = document.querySelectorAll(`input[name="check"]:checked`);
+          let ids = [];
+          checkboxes.forEach((checkbox) => {
+              ids.push(checkbox.id);
+              //console.log(checkbox.id);
+          });
+
+          let data = {
+            "id": ids,
+            "file": $("#fileSelect").val()
+          };
+          if (data.id.length) {
+            console.log(data.id.length);
+            socket.emit('reprogramming', data);
+            $('#reprogramStatus').text("Sent reprogram command");
+          }
+          else $('#reprogramStatus').text("Please select at least one robot to reprogram");
+        }
+        else {
+          $('#reprogramStatus').text("Please select a file to upload");
+        }
       });
 
       $('#checkAll').on("click", function() {
@@ -204,6 +246,24 @@
             cb.checked = Math.random() <= 0.5;
           });
       });
+     $('#refreshOptions').on("click", function () {
+        $("#fileSelect").html('<option value="">-- Please choose a file --</option>');
+        findBinFiles();
+      });
+
+
+      function findBinFiles(path = "") {
+        $.get('/files?path=' + path).then(function(data){
+          data.forEach(function(value, index, array) {
+            if (value.IsDirectory) {
+              findBinFiles(value.Path);
+            }
+            else if (value.Ext == ".bin") {
+              $("#fileSelect").append('<option value="' + value.Path + '">' + value.Path + '</option>');
+            }
+          });
+        });
+      }
     </script>
   </body>
 </html>
