@@ -3,28 +3,35 @@
 ### Prerequisites
 1. Raspberry Pi setup as routed accesss point. Helpful tutorial here [Setting up a Raspberry Pi as a routed wireless access point](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md)
 2. Mosquitto broker installed [How to Install Mosquitto Broker on Raspberry Pi](https://randomnerdtutorials.com/how-to-install-mosquitto-broker-on-raspberry-pi/)
-3. Nodejs and npm installed
+3. Node.js installed
 
 ### Installation
 1. Clone the repo
-```sh
-git clone https://github.com/finnsnap/RoboticsWebserver.git
-```
+    ```sh
+    git clone https://github.com/finnsnap/RoboticsWebserver.git
+    ```
 2. Install all the necessary nodejs modules
-```sh
-npm install
-```
+    ```sh
+    npm install
+    ```
 4. Start the webserver with nodemon
-```sh
-npx nodemon webserver.js
-```
+    ```sh
+    npx nodemon webserver.js
+    ```
+    
+### Built With
 
-## Packet Format Changes to be Made
-### Options
-1. Only send minimal data that has changed
-    From the esp32 the packets should have the robotNumber to identify them and then any data that has **changed** with the robot
+* [Bootstrap](http://twitter.github.com/bootstrap/) - UI boilerplate for web apps
+* [Bootswatch](https://bootswatch.com/) - themes for Bootstrap
+* [Node.js](http://nodejs.org) - evented I/O for the backend
+* [Express](http://expressjs.com) - fast node.js network app framework
+* [Multer](https://github.com/expressjs/multer) - handles the file uploading and storage
+* [MQTT.js](https://github.com/mqttjs/MQTT.js) - MQTT communication to each of the ESP32 contollers on the robots
+* [Socket.IO](https://socket.io/) - event based communication between clients and the webserver
 
-    Example of a json packet coming from an esp32 where the batteryLevel, controllerStatus, and tackleStatus have all changed
+### Packet Format
+
+    Example of a json packet coming from a robot
     ```json
     {
         "robotNumber" : "r75",
@@ -34,15 +41,7 @@ npx nodemon webserver.js
     }
     ```
 
-    Example of a json packet coming from an esp32 where nothing about the robot has changed
-    ```json
-    {
-        "robotNumber" : "r75"
-    }
-    ```
-
-2. **Send all data from esp32 no matter what and have webserver decide if it has changed. If it has not changed just send basic newData and noData. If it has changed send newData, noData and full esp32 JSON**
-3. Send all data from esp32 through to client and have them decide if it has changed.
+**Send all data from esp32 no matter what and have webserver decide if it has changed. If it has not changed just send basic newData and noData. If it has changed send newData, noData and full esp32 JSON**
 
 From the webserver the packets contain any new data from the esp32's as well as newData and noData which help determine if there data and the status of that data. See the table below for the possible states
 
@@ -53,8 +52,14 @@ From the webserver the packets contain any new data from the esp32's as well as 
 | There is new data from the esp32                | true    | false  |
 | Data has **just** stopped coming from esp32     | true    | true   |
 
+**Change system status to**
+dataStatus
+0 - no data has been coming from this robot
+1 - data has just stopped coming from the esp32
+2 - new data from the esp32
 
-An example of an empty json packet coming from the weberver
+
+An example of an "empty" json packet coming from the weberver
 
 ```json
 {
@@ -79,6 +84,21 @@ An example of an empty json packet coming from the weberver
 }
 ```
 
+An example of a json packet coming from an esp to the raspberry pi
+
+```json
+{
+    "robotNumber" : "rK9",
+    "contollerStatus"  : "Connected",
+    "tackleStatus"  : "Tackled",
+    "batteryLevel" : "22",
+    "position" : "Kicker",
+    "espMacAddress" : "30:AE:A4:07:0D:64",
+    "ipAddress" : "192.168.4.14",
+    "codeVersion" : "2.34"
+}
+```
+
 ## Reprogramming
 Send command --> Recieve response --> Display whether reprogramming was sucsessful or not
 * https://stackoverflow.com/questions/34822599/optimum-way-to-write-long-javascript-variables-containing-html?noredirect=1&lq=1
@@ -90,12 +110,13 @@ Send command --> Recieve response --> Display whether reprogramming was sucsessf
     * Change it so it does not update entire card every time new data is recieved
 * Reprogramming
     * ~~Make file expolorer so you can see files that are currently on raspberry pi~~
-    * ~~~Make reprogramming robots possible~~~
-    * ~~~Program all connected robots, or just one, or maybe even batches~~~
-    * ~~~Select from a list which robots to program~~~
-    * ~~~Send robot which file to reprogram with, dynamic choice of new file to upload~~~
+    * ~~Make reprogramming robots possible~~3
+    * ~~Program all connected robots, or just one, or maybe even batches~~
+    * ~~Select from a list which robots to program~~
+    * ~~Send robot which file to reprogram with, dynamic choice of new file to upload~~
     * Response from webserver (and esp32?) when uploading new code
     * Compile code on raspberry pi??
+* Popup messages
 
 ## Links
 * https://techtutorialsx.com/2017/04/24/esp32-publishing-messages-to-mqtt-topic/
@@ -115,3 +136,7 @@ Send command --> Recieve response --> Display whether reprogramming was sucsessf
 * [Node.js and Raspberry Pi - Webserver with WebSocket](https://www.w3schools.com/nodejs/nodejs_raspberrypi_webserver_websocket.asp)
 * [mqtt-panel](https://github.com/fabaff/mqtt-panel)
 * [Node.js + Nginx](https://stackoverflow.com/questions/5009324/node-js-nginx-what-now)
+
+
+
+[Filebrowser](https://github.com/sumitchawla/file-browser)

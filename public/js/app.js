@@ -163,4 +163,11 @@ jQuery(function($){
 
     return false;
   });
+
+  $('#statusModal').on('hidden.bs.modal', function (e) {
+    $("#singleUploadstatus").empty()
+    $("#multipleUploadstatus").empty()
+    $(".refresh").trigger("click")
+    $("#refreshOptions").trigger("click")
+  })
 });

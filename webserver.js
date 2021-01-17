@@ -13,8 +13,8 @@ var server = http.createServer(app);
 
 // Pass a http.Server instance to the listen method
 var io = require('socket.io').listen(server);
-// The server should start listening
-server.listen(8080);
+// The server should start listening to the given port
+server.listen(8081);
 
 // Start and connect the mqtt server
 var mqtt = require('mqtt');
@@ -49,7 +49,7 @@ app.use('/js', express.static(__dirname + '/node_modules/jquery-form/dist')); //
 app.use('/js', express.static(__dirname + '/node_modules/mustache')); // redirect mustache JS
 app.use('/js', express.static(__dirname + '/public/js')); // redirect custom JS
 
-
+// Exposes public folder for uploading files
 app.use('/public', express.static(__dirname + '/public'));
 
 
@@ -83,24 +83,24 @@ esp32mqtt.on('esp32input', function (topic, message) {
 })
 
 // JSON packet to hold data about all the robots
-var packet = {"r75" : {"newData" : true, "noData" : false},
-              "r82" : {"newData" : true, "noData" : false},
-              "rK9" : {"newData" : true, "noData" : false},
-              "r9" : {"newData" : true, "noData" : false},
-              "r7" : {"newData" : true, "noData" : false},
-              "r3" : {"newData" : true, "noData" : false},
-              "r12" : {"newData" : true, "noData" : false},
-              "r16" : {"newData" : true, "noData" : false},
-              "r35" : {"newData" : true, "noData" : false},
-              "r40" : {"newData" : true, "noData" : false},
-              "r42" : {"newData" : true, "noData" : false},
-              "r44" : {"newData" : true, "noData" : false},
-              "r53" : {"newData" : true, "noData" : false},
-              "r68" : {"newData" : true, "noData" : false},
-              "r74" : {"newData" : true, "noData" : false},
-              "r81" : {"newData" : true, "noData" : false},
-              "r85" : {"newData" : true, "noData" : false},
-              "r88" : {"newData" : true, "noData" : false}
+var packet = {"r75" : {"dataStatus" : 0},
+              "r82" : {"dataStatus" : 0},
+              "rK9" : {"dataStatus" : 0},
+              "r9" : {"dataStatus" : 0},
+              "r7" : {"dataStatus" : 0},
+              "r3" : {"dataStatus" : 0},
+              "r12" : {"dataStatus" : 0},
+              "r16" : {"dataStatus" : 0},
+              "r35" : {"dataStatus" : 0},
+              "r40" : {"dataStatus" : 0},
+              "r42" : {"dataStatus" : 0},
+              "r44" : {"dataStatus" : 0},
+              "r53" : {"dataStatus" : 0},
+              "r68" : {"dataStatus" : 0},
+              "r74" : {"dataStatus" : 0},
+              "r81" : {"dataStatus" : 0},
+              "r85" : {"dataStatus" : 0},
+              "r88" : {"dataStatus" : 0}
             };
 
 // Handle event when a message is recieved from an esp32
@@ -119,8 +119,7 @@ esp32mqtt.on('message', function (topic, message) {
         var key = data.robotNumber;
         delete data.robotNumber;
         packet[key] = data;
-        packet[key].newData = true;
-        packet[key].noData = false;
+        packet[key].dataStatus = 2;
       }
 
       //console.log("Shortened data: " + JSON.stringify(data));
@@ -142,8 +141,10 @@ function sendIntervalPacket(){
     //console.log("New interval packet: " + JSON.stringify(packet));
 
     for (var key of Object.keys(packet)) {
-      if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
-      if (packet[key].newData) packet[key].newData = false;
+      if (packet[key].dataStatus > 0) packet[key].dataStatus--;
+
+      // if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
+      // if (packet[key].newData) packet[key].newData = false;
     }
   }
   catch (err) {
