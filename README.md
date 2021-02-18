@@ -88,16 +88,48 @@ An example of a json packet coming from an esp to the raspberry pi
 
 ```json
 {
-    "robotNumber" : "rK9",
-    "contollerStatus"  : "Connected",
-    "tackleStatus"  : "Tackled",
-    "batteryLevel" : "22",
-    "position" : "Kicker",
-    "espMacAddress" : "30:AE:A4:07:0D:64",
-    "ipAddress" : "192.168.4.14",
-    "codeVersion" : "2.34"
+    "r75":{"dataStatus":0},
+    "r82":{"dataStatus":0},
+    "rK9":{ 
+            "espMacAddress":"CC:50:E3:92:A2:FC",
+            "batteryLevel":"Disconnected",
+            "contollerStatus":"Disconnected",
+            "tackleStatus":"Not Connected",
+            "dataStatus":2
+          },
+    "r9":{"dataStatus":0},
+    "r7":{"dataStatus":0},
+    "r3":{"dataStatus":0},
+    "r12":{"dataStatus":0},
+    "r16":{"dataStatus":0},
+    "r35":{"dataStatus":0},
+    "r40":{"dataStatus":0},
+    "r42":{"dataStatus":0},
+    "r44":{"dataStatus":0},
+    "r53":{"dataStatus":0},
+    "r68":{"dataStatus":0},
+    "r74":{"dataStatus":0},
+    "r81":{"dataStatus":0},
+    "r85":{"dataStatus":0},
+    "r88":{"dataStatus":0}}
+'''
+```json
+{
+    "robotNumber":"rK9",
+    "espMacAddress":"CC:50:E3:92:A2:FC",
+    "batteryLevel":"Disconnected",
+    "contollerStatus":"Disconnected",
+    "tackleStatus":"Not Connected"
 }
 ```
+
+| Name            | Possible Data                            |
+|-----------------|------------------------------------------|
+| robotNumber     | r and then robot name, e.g. "rK9"        |
+| espMacAddress   | Mac address of ESP32                     |
+| batteryLevel    | "Disconnected" or number 0 to 100        |
+| contollerStatus | "Disconnected" or "Connected"            |
+| tackleStatus    | "Disconnected", "Tackled", "Not Tackled" |
 
 ## Reprogramming
 Send command --> Recieve response --> Display whether reprogramming was sucsessful or not
@@ -140,3 +172,15 @@ Send command --> Recieve response --> Display whether reprogramming was sucsessf
 
 
 [Filebrowser](https://github.com/sumitchawla/file-browser)
+
+
+
+
+
+Webserver should recieve all packets from esp's
+Take packets and check to see if they are different from ones stored
+if they are different, update the stored packet and send it out
+every 1 sec check if new packet has been recieved from esp and remove data or keep it
+
+
+delete packet from robotData if it expires

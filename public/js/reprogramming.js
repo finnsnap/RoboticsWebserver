@@ -171,3 +171,102 @@ jQuery(function($){
     $("#refreshOptions").trigger("click")
   })
 });
+
+
+
+const socket = io(); //load socket.io-client and connect to the host that serves the page
+      console.log("Started sockets");
+      var firstPacket = true;
+
+      socket.on('website', function (message) {
+        try {
+          if (firstPacket) {
+            //console.log("First packet: " + JSON.stringify(message));
+              
+            for (var key of Object.keys(message)) {
+              var robotData = {
+                cardID: "",
+                data: "bg-danger",
+                name: "",
+              }
+                
+              robotData.cardID = key;
+              robotData.name = key.replace('r', '');
+
+              $("#checkboxes").append(Mustache.render($("#template").html(), robotData));
+            }
+
+            firstPacket = false;
+          }
+        }
+        catch (err) {
+          console.log("Error: " + err.message);
+        }
+      });
+      
+      // Find all bin files to fill select box
+      findBinFiles();
+
+      $('#reprogramRobots').on("click", function() {
+        $('#reprogramStatus').text("");
+        if ($("#fileSelect").val().search(".bin") >= 0){
+          const checkboxes = document.querySelectorAll(`input[name="check"]:checked`);
+          let ids = [];
+          checkboxes.forEach((checkbox) => {
+              ids.push(checkbox.id);
+              //console.log(checkbox.id);
+          });
+
+          let data = {
+            "id": ids,
+            "file": $("#fileSelect").val()
+          };
+          if (data.id.length) {
+            console.log(data.id.length);
+            socket.emit('reprogramming', data);
+            $('#reprogramStatus').text("Sent reprogram command");
+          }
+          else $('#reprogramStatus').text("Please select at least one robot to reprogram");
+        }
+        else {
+          $('#reprogramStatus').text("Please select a file to upload");
+        }
+      });
+
+      $('#checkAll').on("click", function() {
+        const cbs = document.querySelectorAll('input[name="check"]');
+        cbs.forEach((cb) => {
+            cb.checked = true;
+        });
+      });
+
+      $('#uncheckAll').on("click", function () {
+          const cbs = document.querySelectorAll('input[name="check"]');
+          cbs.forEach((cb) => {
+            cb.checked = false;
+          });
+        });
+      $('#checkRandom').on("click", function () {
+          const cbs = document.querySelectorAll('input[name="check"]');
+          cbs.forEach((cb) => {
+            cb.checked = Math.random() <= 0.5;
+          });
+      });
+     $('#refreshOptions').on("click", function () {
+        $("#fileSelect").html('<option value="">-- Please choose a file --</option>');
+        findBinFiles();
+      });
+
+
+      function findBinFiles(path = "") {
+        $.get('/files?path=' + path).then(function(data){
+          data.forEach(function(value, index, array) {
+            if (value.IsDirectory) {
+              findBinFiles(value.Path);
+            }
+            else if (value.Ext == ".bin") {
+              $("#fileSelect").append('<option value="' + value.Path + '">' + value.Path + '</option>');
+            }
+          });
+        });
+      }

@@ -48,69 +48,8 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>  
     <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
-
-    <script>
-      const socket = io(); //load socket.io-client and connect to the host that serves the page
-      console.log("Started sockets");
-      var firstPacket = true;
-
-      socket.on('website',  function(message){    
-        try {
-          if (firstPacket){
-            console.log("First packet: " + JSON.stringify(message));
-            for (var key of Object.keys(message)) {
-              if (!message[key].noData) {
-                var row = $('<tr/ class=table-success id=' + key + '>');
-                row.append($('<td/>').html(key.replace('r', '')));
-                row.append($('<td/>').html(message[key].batteryLevel));
-                row.append($('<td/>').html(message[key].contollerStatus));
-                row.append($('<td/>').html(message[key].tackleStatus));
-              }
-              else {
-                var row = $('<tr/ class=table-active id=' + key + '>');
-                row.append($('<td/>').html(key.replace('r', '')));
-                row.append($('<td/>').html(""));
-                row.append($('<td/>').html(""));
-                row.append($('<td/>').html(""));
-              }
-              $('#summtable').append(row); 
-            } 
-            firstPacket = false;
-          }
-          else {
-            // Sample message: "{"1":{"batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","newData":true,"noData":false},"2":{"newData":false,"noData":true}, ..."
-            console.log("New packet: " + JSON.stringify(message));
-            for (var key of Object.keys(message)) {
-              if (message[key].noData) {
-                var row = $('<tr/ class=table-active id=' + key + '>');
-                row.append($('<td/>').html(key.replace('r', '')));
-                row.append($('<td/>').html(""));
-                row.append($('<td/>').html(""));
-                row.append($('<td/>').html(""));
-                $('#' + key).replaceWith(row);
-              }
-              else if (message[key].newData) {
-                var row = $('<tr/ id=' + key + '>');
-                
-                row.append($('<td/ class=table-success >').html(key.replace('r', '')));
-                
-                row.append($('<td/ class=table-success >').html(message[key].batteryLevel));
-                
-                if (message[key].contollerStatus == "Disconnected") row.append($('<td/ class=table-info>').html(message[key].contollerStatus));
-                else row.append($('<td/ class=table-success >').html(message[key].contollerStatus));
-                
-                if (message[key].tackleStatus == "Tackled") row.append($('<td/ class=table-danger>').html(message[key].tackleStatus));
-                else row.append($('<td/ class=table-success>').html(message[key].tackleStatus));
-                
-                $('#' + key).replaceWith(row);
-              }
-            } 
-          } 
-        }
-        catch(err) {
-          console.log("Error: " + err.message);
-        }  
-      })
-    </script>
+    
+    <script src="/js/home.js"></script>  
+    
   </body>
 </html> 

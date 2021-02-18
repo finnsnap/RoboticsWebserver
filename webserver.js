@@ -56,7 +56,7 @@ app.use('/public', express.static(__dirname + '/public'));
 // Handle socketio connection event from a client
 io.on('connection', function(socket) {  
   console.log('A user connected');
-  io.sockets.emit('website', packet);
+  io.sockets.emit('website', robotData);
 
   socket.on('reprogramming', function (data) {
     data.id.forEach((checkbox) => {
@@ -83,7 +83,7 @@ esp32mqtt.on('esp32input', function (topic, message) {
 })
 
 // JSON packet to hold data about all the robots
-var packet = {"r75" : {"dataStatus" : 0},
+var robotData = {"r75" : {"dataStatus" : 0},
               "r82" : {"dataStatus" : 0},
               "rK9" : {"dataStatus" : 0},
               "r9" : {"dataStatus" : 0},
@@ -107,19 +107,44 @@ var packet = {"r75" : {"dataStatus" : 0},
 esp32mqtt.on('message', function (topic, message) {
   if (topic == "esp32/output"){
     try {
-      var data = JSON.parse(message);
+      var newRobotData = JSON.parse(message);
     
       // Sample message: "{"robotNumber":"1","batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","timeSinceDataSend":2855571}"
       // Sample manual command: mosquitto_pub -h localhost -t esp32/output -m "{\"robotNumber\":\"r75\",\"batteryLevel\":\"33\",\"contollerStatus\":\"Connected\",\"tackleStatus\":\"tackled\"}"
       
       //console.log("\nOld packet: " + JSON.stringify(packet));
-      //console.log("New data: " + JSON.stringify(data));
+      //console.log("New data: " + JSON.stringify(newRobotData));
 
-      if(packet.hasOwnProperty(data.robotNumber)){
-        var key = data.robotNumber;
-        delete data.robotNumber;
-        packet[key] = data;
-        packet[key].dataStatus = 2;
+      if(robotData.hasOwnProperty(newRobotData.robotNumber)){
+        var robotIndex = newRobotData.robotNumber;
+        delete newRobotData.robotNumber;
+
+        // console.log("New packet \n");
+        // console.log(robotData[key]);
+        // console.log(data);
+        
+        // Update status of data to newest as a new packet was just received
+        robotData[robotIndex].dataStatus = 2;
+
+        // Check, update and send data if new data is differnt from old data
+        for (var keys of Object.keys(newRobotData)) {
+          if (robotData[robotIndex][keys] != newRobotData[keys]) {
+            // console.log("Different packet");
+            // console.log(robotData[key]);
+            // console.log(data);
+
+            robotData[robotIndex] = newRobotData;
+            robotData[robotIndex].dataStatus = 2;
+            sendPacket(robotData);
+            break;
+          }
+
+    
+        //   // if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
+        //   // if (packet[key].newData) packet[key].newData = false;
+        // }
+
+        }
       }
 
       //console.log("Shortened data: " + JSON.stringify(data));
@@ -135,26 +160,48 @@ esp32mqtt.on('message', function (topic, message) {
 })
 
 
-function sendIntervalPacket(){
+function sendPacket(packet) {
   try {
     io.sockets.emit('website', packet);
     //console.log("New interval packet: " + JSON.stringify(packet));
-
-    for (var key of Object.keys(packet)) {
-      if (packet[key].dataStatus > 0) packet[key].dataStatus--;
-
-      // if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
-      // if (packet[key].newData) packet[key].newData = false;
-    }
+    //console.log("Sent packet: " + JSON.stringify(packet) + "\n At: " + Date.now());
+    console.log("Sent packet at: " + Date.now());
   }
   catch (err) {
     console.log("Error: " + err.message);
   }
 }
 
-// Sends a JSON packet at specified intervals
-setInterval(sendIntervalPacket, 250);
+// Checks all the packets and if dataStatus is zero, clears it, otherwise decrements data status by 1
+function updatePacketStatus(packet) {
+  for (var key of Object.keys(packet)) {
+    
+    if (packet[key].dataStatus > 0) {
+      packet[key].dataStatus--;
+    }
+    else if (Object.keys(packet[key]).length > 1) {
+      for (var keys of Object.keys(packet[key])) {
+        if (keys != "dataStatus") {
+          delete packet[key][keys];
+        }
+        //console.log("deleted " + keys);
+      }
 
+      sendPacket(packet);
+    }
+
+    //console.log(packet[key]);
+
+    // if (!packet[key].newData) packet[key] = {"newData" : false, "noData" : true};
+    // if (packet[key].newData) packet[key].newData = false;
+  }
+}
+
+// Sends a JSON packet at specified intervals
+//setInterval(sendPacket, 250);
+
+// Updates the status of the JSON packet at specified intervals
+setInterval(updatePacketStatus, 250, robotData);
 
 
 

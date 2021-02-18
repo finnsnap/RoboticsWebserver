@@ -39,10 +39,12 @@
     <script src="/socket.io/socket.io.js"></script> <!-- include socket.io client side script -->
     <script src="/js/mustache.min.js"></script>
 
+    <script src="/js/robotinfo.js"></script>
+
     <!-- here is your template -->
     <script id="template" type="text/template">
             <div class="card m-3" id="{{cardID}}" style="width:17rem;">
-                <h4 class="card-header card-title {{data}}">{{name}}</h4>
+                <h4 class="card-header card-title {{data}}" id="{{cardID}}title">{{name}}</h4>
                 
                 <div class="card-body p-0">
                   <h5 class="card-text p-3 m-0 text-left">Status</h5>
@@ -71,103 +73,6 @@
                 </div>
             </div>
     </script>
-
-
-
-
-
-    <script>
-      const socket = io(); //load socket.io-client and connect to the host that serves the page
-        console.log("Started sockets");
-        var firstPacket = true;
-
-        socket.on('website', function (message) {
-          try {
-            if (firstPacket) {
-              console.log("First packet: " + JSON.stringify(message));
-              
-              for (var key of Object.keys(message)) {
-                var robotData = {
-                  cardID: "",
-                  data: "bg-danger",
-                  name: "",
-                  contoller: "bg-info",
-                  tackle: "bg-info",
-                  battery: "bg-info",
-                  position: "",
-                  macaddress: "",
-                  ipaddress: "",
-                  version: ""
-                }
-                
-                robotData.cardID = key;
-                robotData.name = key.replace('r', '');
-
-                if (!message[key].noData) {
-                  robotData.data = "bg-success";
-                  
-                  if (message[key].contollerStatus == "Connected") robotData.contoller = "bg-success";
-                  else robotData.contoller = "bg-danger";
-                  
-                  if (message[key].tackleStatus == "Tackled") robotData.tackle = "bg-danger";
-                  else robotData.tackle = "bg-success";
-
-
-                  // robotData.battery = message[key].batteryLevel;
-                  // robotData.position = message[key].batteryLevel;
-                  // robotData.macaddress = message[key].batteryLevel;
-                  // robotData.ipaddress = message[key].batteryLevel;
-                  // robotData.version = message[key].batteryLevel;
-                }
-                console.log(robotData.name);
-                $("#cards").append(Mustache.render($("#template").html(), robotData));
-              }
-              firstPacket = false;
-            }
-            else {
-              // Sample message: "{"1":{"batteryLevel":"33","contollerStatus":"Connected","tackleStatus":"tackled","newData":true,"noData":false},"2":{"newData":false,"noData":true}, ..."
-              console.log("New packet: " + JSON.stringify(message));
-
-              for (var key of Object.keys(message)) {
-                var robotData = {
-                  cardID: "",
-                  data: "bg-danger",
-                  name: "",
-                  contoller: "bg-info",
-                  tackle: "bg-info",
-                  battery: "bg-info",
-                  position: "",
-                  macaddress: "",
-                  ipaddress: "",
-                  version: ""
-                }
-                robotData.cardID = key;
-                robotData.name = key.replace('r', '');
-
-                if (message[key].newData) {
-                  console.log("Key: " + key);
-
-                  robotData.data = "bg-success";
-
-                  if (message[key].contollerStatus == "Disconnected") robotData.contoller = "bg-danger";
-                  else robotData.contoller = "bg-success";
-
-                  if (message[key].tackleStatus == "Tackled") robotData.tackle = "bg-danger";
-                  else robotData.tackle = "bg-success";
-                }
-
-                if (message[key].noData) {
-                  //$('#' + key).replaceWith(Mustache.render($("#template").html(), robotData));
-                }
-              }
-            }
-          }
-          catch (err) {
-            console.log("Error: " + err.message);
-          }
-        })
-    </script>
-    
 
   </body>
 </html> 
